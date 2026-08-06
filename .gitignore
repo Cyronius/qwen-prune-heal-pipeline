@@ -1,0 +1,4 @@
+*.gguf
+.claude
+pruned*
+bench

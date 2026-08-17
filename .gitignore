@@ -2,3 +2,5 @@
 .claude
 pruned*
 bench
+__pycache__/
+*.pyc

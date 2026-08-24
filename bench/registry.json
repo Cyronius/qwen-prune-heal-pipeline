@@ -1,0 +1,91 @@
+{
+  "server_bin": "C:/Users/josha/.lmstudio/extensions/backends/llama.cpp-win-x86_64-vulkan-avx2-2.27.1/llama-server.exe",
+  "models": {
+    "unsloth-base-mtp": {
+      "gguf": "C:/Users/josha/.cache/huggingface/hub/models--unsloth--Qwen3.6-35B-A3B-MTP-GGUF/snapshots/5bc3e238d916f48a861bac2f8a1990a0e9b7e98d/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+      "note": "what the user runs today: Qwen3.6 UD-Q4_K_XL with MTP head, unsloth's own quant recipe. NOT a fair speed comparison against our own builds (different conversion/calibration, no shared lineage) -- use base-q4km-mtp for that instead."
+    },
+    "base-q4km": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-base-Q4_K_M.gguf",
+      "note": "exact-recipe control: unpruned Qwen3.6, our Q4_K_M. Verified this has NO mtp tensors (fails to load with --spec-type draft-mtp: 'model doesn't contain MTP layers') -- our hf-to-gguf conversion silently drops embedded mtp.* tensors unless they're split into their own model-mtp.safetensors shard first. See base-q4km-mtp for the MTP-preserved twin of this exact build."
+    },
+    "base-q4km-mtp": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-base-mtp-Q4_K_M.gguf",
+      "extra_args": [
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "2"
+      ],
+      "note": "base-q4km's exact twin: same original Qwen3.6-35B-A3B checkpoint, same hf-to-gguf convert + plain Q4_K_M (no imatrix), only difference is the 19 mtp.* tensors were extracted into their own model-mtp.safetensors shard first (same trick used for the healed-C build) so the converter picks them up as blk.40.nextn.*. This -- not unsloth-base-mtp -- is the honest base+MTP comparison point for 27B-A2.8B-mtp and 27B-A2.8B-finishing, since it shares their exact lineage minus the pruning/healing/finishing steps."
+    },
+    "prune-A": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-pruned-A-Q4_K_M.gguf",
+      "note": "expert width 512->256, all 40 layers"
+    },
+    "prune-C": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-pruned-C-Q4_K_M.gguf",
+      "note": "1 of 3 GDN layers dropped, interval 4->3, experts intact"
+    },
+    "prune-AC": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-pruned-AC-Q4_K_M.gguf",
+      "note": "both cuts combined"
+    },
+    "27B-A2.8B": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-Q4KM-imat.gguf",
+      "note": "Qwen3.6-27B-A2.8B (pruned + healed from Qwen3.6-35B-A3B, 26.7B total / 2.83B active): cut-C prune + 550-step SFT heal, imatrix Q4_K_M"
+    },
+    "27B-A2.8B-mtp": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+      "extra_args": [
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "2"
+      ],
+      "note": "SHIP CONFIG: Qwen3.6-27B-A2.8B with MTP head, k=8, imatrix Q4_K_M, speculative decoding"
+    },
+    "27B-A2.8B-finishing": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-iq3exp-q4head.gguf",
+      "extra_args": [
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "2"
+      ],
+      "note": "27B-A2.8B-mtp with finishing cuts: routed experts (ffn_gate/up/down_exps) Q4_K/Q6_K -> IQ3_S, lm_head Q6_K -> Q4_K. Same imatrix (healed-c.imatrix), MTP/attention/GDN untouched."
+    },
+    "base-q4km-mtp-off": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-base-mtp-Q4_K_M.gguf",
+      "note": "same file as base-q4km-mtp, spec decoding OFF -- paired control for a same-session MTP delta"
+    },
+    "27B-A2.8B-mtp-off": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+      "note": "same file as 27B-A2.8B-mtp, spec decoding OFF -- paired control for a same-session MTP delta"
+    },
+    "27B-A2.8B-finishing-off": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-iq3exp-q4head.gguf",
+      "note": "same file as 27B-A2.8B-finishing, spec decoding OFF -- paired control for a same-session MTP delta"
+    },
+    "27B-A2.8B-k6": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:6"],
+      "note": "same file as 27B-A2.8B-mtp, k=6 routed experts, MTP off. Re-verifying the old k6 speed row (from the llama-current binary + mtp_probe.py, never re-checked against the registry's LM Studio binary)."
+    },
+    "27B-A2.8B-k6-mtp": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:6", "--spec-type", "draft-mtp", "--spec-draft-n-max", "2"],
+      "note": "same file as 27B-A2.8B-mtp, k=6 routed experts, MTP on"
+    },
+    "27B-A2.8B-k4": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:4"],
+      "note": "same file as 27B-A2.8B-mtp, k=4 routed experts, MTP off"
+    },
+    "c2-DEAD": {
+      "gguf": "C:/code/model-shrink-ideas/qwen36-c2-20layer-DEAD-Q4_K_M.gguf",
+      "note": "DEAD (verified 2026-08-22): Qwen3.6-27B-A2.8B cut a second time, 30->20 layers (interval 3->2), UNHEALED, plain Q4_K_M. tools .05, ppl 3741 -- kept as a negative-result record only, not a candidate."
+    }
+  },
+  "server_bin_mtp": "C:/code/model-shrink-ideas/bench/tools/llama-current/llama-server.exe"
+}

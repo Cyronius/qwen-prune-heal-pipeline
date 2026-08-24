@@ -1,0 +1,33 @@
+{
+  "runid": "20260805T195419Z",
+  "model": "prune-AC",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-pruned-AC-Q4_K_M.gguf",
+  "size_gb": 8.64,
+  "timestamp": "2026-08-06T00:59:59.384468+00:00",
+  "tools_acc": 0.075,
+  "tools_by_category": {
+    "argtype": 0.0,
+    "multiturn": 0.0,
+    "negative": 0.3,
+    "selection": 0.0,
+    "simple": 0.0
+  },
+  "gsm8k_acc": 0.0,
+  "mmlu_acc": 0.1667,
+  "loop_rate": 0.5765,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 55.46,
+  "completion_pp_tps_sd": 4.89,
+  "completion_tg_tps_mean": 36.78,
+  "completion_tg_tps_sd": 0.86,
+  "tool_call_pp_tps_mean": 56.0,
+  "tool_call_pp_tps_sd": 60.56,
+  "tool_call_tg_tps_mean": 36.96,
+  "tool_call_tg_tps_sd": 1.28,
+  "ppl_wikitext2_32chunk": 101.2726,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

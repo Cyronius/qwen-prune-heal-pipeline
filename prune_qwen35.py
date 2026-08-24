@@ -28,15 +28,22 @@ DO_CUT_A = "--skip-expert-cut" not in sys.argv  # C-only control run when skippe
 DO_CUT_C = "--skip-layer-cut" not in sys.argv   # A-only run when skipped
 DST.mkdir(parents=True, exist_ok=True)
 
-OLD_LAYERS = 40
-DROP_SLOT = 1          # of each [GDN, GDN, GDN, ATTN] group, drop the middle GDN
-NEW_FF = 256           # halved expert intermediate
-OLD_FF = 512
-SHARD_BYTES = 4 * 1024**3
+# source layer count read from config, so the script can re-cut an already-C-cut model
+_src_cfg = json.load(open(SRC / "config.json"))
+OLD_LAYERS = _src_cfg["text_config"]["num_hidden_layers"]
+# Layer groups: the source pattern repeats every GROUP layers with the attention layer
+# last ((i+1) % interval != 0). Dropping slot S from each group must hit a GDN, i.e.
+# S in [0, GROUP-2]. 40-layer base: GROUP 4. A 30-layer interval-3 model: GROUP 3.
+GROUP = int(sys.argv[sys.argv.index("--group") + 1]) if "--group" in sys.argv else 4
+DROP_SLOT = int(sys.argv[sys.argv.index("--drop-slot") + 1]) if "--drop-slot" in sys.argv else 1
+assert DROP_SLOT < GROUP - 1, "drop slot must be a GDN position, not the attention layer"
+NEW_FF = int(sys.argv[sys.argv.index("--new-ff") + 1]) if "--new-ff" in sys.argv else 256
+OLD_FF = _src_cfg["text_config"]["moe_intermediate_size"]
+SHARD_BYTES = 1 * 1024**3  # small shards: Windows commit headroom is tight
 
-keep_layers = [i for i in range(OLD_LAYERS) if not DO_CUT_C or i % 4 != DROP_SLOT]
+keep_layers = [i for i in range(OLD_LAYERS) if not DO_CUT_C or i % GROUP != DROP_SLOT]
 old2new = {old: new for new, old in enumerate(keep_layers)}
-print(f"keeping {len(keep_layers)}/{OLD_LAYERS} layers; dropping {[i for i in range(OLD_LAYERS) if i % 4 == DROP_SLOT]}")
+print(f"keeping {len(keep_layers)}/{OLD_LAYERS} layers; dropping {[i for i in range(OLD_LAYERS) if i % GROUP == DROP_SLOT]}")
 
 index = json.load(open(SRC / "model.safetensors.index.json"))
 weight_map = index["weight_map"]
@@ -167,7 +174,7 @@ for i, (name, fn) in enumerate(sorted(out_tensors.items())):
     t = fn().contiguous().clone()
     del fn
     shard_buf[name] = t
-    if i % 50 == 0:
+    if i % 10 == 0:
         gc.collect()
     shard_size += t.numel() * t.element_size()
     if shard_size >= SHARD_BYTES:
@@ -193,8 +200,10 @@ cfg = json.load(open(SRC / "config.json"))
 tc = cfg["text_config"]
 tc["num_hidden_layers"] = len(keep_layers)
 if DO_CUT_C:
-    tc["full_attention_interval"] = 3
-    tc["layer_types"] = (["linear_attention", "linear_attention", "full_attention"] * (len(keep_layers) // 3))
+    new_interval = GROUP - 1
+    tc["full_attention_interval"] = new_interval
+    tc["layer_types"] = ((["linear_attention"] * (new_interval - 1) + ["full_attention"])
+                         * (len(keep_layers) // new_interval))
 if DO_CUT_A:
     tc["moe_intermediate_size"] = NEW_FF
     tc["shared_expert_intermediate_size"] = NEW_FF

@@ -1,0 +1,38 @@
+{
+  "runid": "20260822T164109Z",
+  "model": "healedC-c2",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-healedC-c2-Q4_K_M.gguf",
+  "size_gb": 11.39,
+  "timestamp": "2026-08-22T16:53:45.871533+00:00",
+  "tools_acc": 0.05,
+  "tools_by_category": {
+    "argtype": 0.0,
+    "multiturn": 0.0,
+    "negative": 0.2,
+    "selection": 0.0,
+    "simple": 0.0
+  },
+  "gsm8k_acc": 0.0,
+  "mmlu_acc": 0.0,
+  "loop_rate": 0.3412,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 71.36,
+  "completion_pp_tps_sd": 5.07,
+  "completion_tg_tps_mean": 500025.08,
+  "completion_tg_tps_sd": 534495.68,
+  "tool_call_pp_tps_mean": 86.18,
+  "tool_call_pp_tps_sd": 98.37,
+  "tool_call_tg_tps_mean": 111159.6,
+  "tool_call_tg_tps_sd": 333315.15,
+  "speed_errors": [
+    "tool_call[2]: HTTP Error 500: Internal Server Error",
+    "completion[3]: HTTP Error 500: Internal Server Error",
+    "completion[6]: HTTP Error 500: Internal Server Error"
+  ],
+  "ppl_wikitext2_32chunk": 3741.1257,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

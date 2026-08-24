@@ -1,0 +1,47 @@
+[09:50:27] server healthy
+[09:50:37]   tools simple-01: OK
+[09:50:45]   tools simple-02: OK
+[09:51:00]   tools simple-03: OK
+[09:51:08]   tools simple-04: OK
+[09:51:22]   tools simple-05: OK
+[09:51:30]   tools simple-06: OK
+[09:51:41]   tools simple-07: OK
+[09:51:54]   tools simple-08: OK
+[09:52:15]   tools argtype-01: OK
+[09:52:35]   tools argtype-02: OK
+[09:52:43]   tools argtype-03: OK
+[09:52:53]   tools argtype-04: OK
+[09:53:01]   tools argtype-05: OK
+[09:53:13]   tools argtype-06: OK
+[09:53:19]   tools argtype-07: OK
+[09:53:29]   tools argtype-08: OK
+[09:53:38]   tools select-01: OK
+[09:53:59]   tools select-02: OK
+[09:54:11]   tools select-03: OK
+[09:54:18]   tools select-04: OK
+[09:54:29]   tools select-05: OK
+[09:54:41]   tools select-06: OK
+[09:54:48]   tools select-07: OK
+[09:55:08]   tools select-08: FAIL
+[09:55:19]   tools negative-01: OK
+[09:56:05]   tools negative-02: OK
+[09:56:52]   tools negative-03: OK
+[09:56:58]   tools negative-04: OK
+[09:57:07]   tools negative-05: OK
+[09:57:20]   tools negative-06: OK
+[09:57:32]   tools negative-07: OK
+[09:57:58]   tools negative-08: OK
+[09:58:07]   tools negative-09: OK
+[09:59:01]   tools negative-10: FAIL
+[09:59:07]   tools multiturn-01: OK
+[09:59:14]   tools multiturn-02: OK
+[09:59:21]   tools multiturn-03: OK
+[09:59:32]   tools multiturn-04: OK
+[09:59:53]   tools multiturn-05: FAIL
+[10:00:00]   tools multiturn-06: OK
+MTP-CONFIRM tools: 37/40
+  argtype: 8/8
+  multiturn: 5/6
+  negative: 9/10
+  selection: 7/8
+  simple: 8/8

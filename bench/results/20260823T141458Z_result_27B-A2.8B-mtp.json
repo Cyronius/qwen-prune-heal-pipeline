@@ -1,0 +1,33 @@
+{
+  "runid": "20260823T141458Z",
+  "model": "27B-A2.8B-mtp",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+  "size_gb": 16.49,
+  "timestamp": "2026-08-23T14:39:23.217439+00:00",
+  "tools_acc": 0.95,
+  "tools_by_category": {
+    "argtype": 1.0,
+    "multiturn": 1.0,
+    "negative": 0.9,
+    "selection": 0.875,
+    "simple": 1.0
+  },
+  "gsm8k_acc": 0.8,
+  "mmlu_acc": 0.7333,
+  "loop_rate": 0.0235,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 49.77,
+  "completion_pp_tps_sd": 4.07,
+  "completion_tg_tps_mean": 36.77,
+  "completion_tg_tps_sd": 1.77,
+  "tool_call_pp_tps_mean": 52.49,
+  "tool_call_pp_tps_sd": 58.97,
+  "tool_call_tg_tps_mean": 40.71,
+  "tool_call_tg_tps_sd": 1.33,
+  "ppl_wikitext2_32chunk": 8.0105,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

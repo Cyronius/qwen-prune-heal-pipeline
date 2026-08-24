@@ -1,0 +1,22 @@
+{
+  "runid": "20260823T_speedcheck3_layeronly",
+  "model": "prune-C",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-pruned-C-Q4_K_M.gguf",
+  "size_gb": 15.95,
+  "timestamp": "2026-08-23T19:18:40.919191+00:00",
+  "tools_acc": null,
+  "tools_by_category": {},
+  "gsm8k_acc": null,
+  "mmlu_acc": null,
+  "loop_rate": null,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 44.31,
+  "completion_pp_tps_sd": 9.22,
+  "completion_tg_tps_mean": 30.16,
+  "completion_tg_tps_sd": 6.7,
+  "tool_call_pp_tps_mean": 54.22,
+  "tool_call_pp_tps_sd": 60.83,
+  "tool_call_tg_tps_mean": 31.29,
+  "tool_call_tg_tps_sd": 4.78,
+  "n": {}
+}

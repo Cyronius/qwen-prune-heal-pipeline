@@ -1,0 +1,33 @@
+{
+  "runid": "20260805T195419Z",
+  "model": "base-q4km",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-base-Q4_K_M.gguf",
+  "size_gb": 21.17,
+  "timestamp": "2026-08-05T20:31:05.643899+00:00",
+  "tools_acc": 0.9,
+  "tools_by_category": {
+    "argtype": 1.0,
+    "multiturn": 0.8333,
+    "negative": 0.9,
+    "selection": 0.75,
+    "simple": 1.0
+  },
+  "gsm8k_acc": 0.9333,
+  "mmlu_acc": 0.7667,
+  "loop_rate": 0.0235,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 22.37,
+  "completion_pp_tps_sd": 3.72,
+  "completion_tg_tps_mean": 11.73,
+  "completion_tg_tps_sd": 0.82,
+  "tool_call_pp_tps_mean": 22.45,
+  "tool_call_pp_tps_sd": 15.97,
+  "tool_call_tg_tps_mean": 11.64,
+  "tool_call_tg_tps_sd": 1.35,
+  "ppl_wikitext2_32chunk": 5.5043,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

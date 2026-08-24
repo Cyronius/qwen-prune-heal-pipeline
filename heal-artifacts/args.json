@@ -1,0 +1,27 @@
+{
+  "student": "/workspace/pruned-c",
+  "data": [
+    "/workspace/data-general",
+    "/workspace/data-agentic"
+  ],
+  "out": "/workspace/heal-run",
+  "loss": "sft",
+  "kd_weight": 0.7,
+  "max_len": 4096,
+  "batch_size": 1,
+  "grad_accum": 16,
+  "lr": 0.0001,
+  "warmup": 30,
+  "steps": 550,
+  "eval_every": 50,
+  "save_every": 100,
+  "eval_frac": 0.02,
+  "rank": 32,
+  "alpha": 64,
+  "four_bit": true,
+  "experts_impl": "grouped_mm",
+  "attn_impl": null,
+  "text_only": false,
+  "device": "cuda",
+  "seed": 0
+}

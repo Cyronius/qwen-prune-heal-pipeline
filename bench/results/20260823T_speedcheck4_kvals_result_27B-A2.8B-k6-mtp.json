@@ -1,0 +1,22 @@
+{
+  "runid": "20260823T_speedcheck4_kvals",
+  "model": "27B-A2.8B-k6-mtp",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
+  "size_gb": 16.49,
+  "timestamp": "2026-08-23T20:54:19.698345+00:00",
+  "tools_acc": null,
+  "tools_by_category": {},
+  "gsm8k_acc": null,
+  "mmlu_acc": null,
+  "loop_rate": null,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 22.49,
+  "completion_pp_tps_sd": 1.94,
+  "completion_tg_tps_mean": 17.77,
+  "completion_tg_tps_sd": 3.29,
+  "tool_call_pp_tps_mean": 23.81,
+  "tool_call_pp_tps_sd": 24.54,
+  "tool_call_tg_tps_mean": 18.38,
+  "tool_call_tg_tps_sd": 4.04,
+  "n": {}
+}

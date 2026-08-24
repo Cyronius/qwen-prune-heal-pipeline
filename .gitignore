@@ -1,4 +1,25 @@
-*.gguf
+# Python
+__pycache__/
+*.pyc
+
+# Local tool config
 .claude
+
+# Model weights, adapters, quantized builds, calibration matrices
+*.gguf
+*.safetensors
+*.imatrix
 pruned*
-bench
+base-mtp-src/
+qwen3.6-27b-a2.8b/
+heal-artifacts/dataset.tgz
+
+# Built binaries / third-party tool drops
+bench/tools/
+
+# Bulky raw benchmark data (public datasets, re-downloadable)
+bench/data/wikitext-2-raw-v1.zip
+bench/data/wikitext-2-raw/
+
+# Working drafts, not the canonical README
+shrink-heal-report*.md

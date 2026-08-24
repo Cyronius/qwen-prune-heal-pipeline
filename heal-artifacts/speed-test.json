@@ -1,0 +1,24 @@
+{
+  "base-q4km": {
+    "speed_reps": 20,
+    "completion_pp_tps_mean": 25.33,
+    "completion_pp_tps_sd": 2.22,
+    "completion_tg_tps_mean": 17.25,
+    "completion_tg_tps_sd": 1.37,
+    "tool_call_pp_tps_mean": 23.31,
+    "tool_call_pp_tps_sd": 18.98,
+    "tool_call_tg_tps_mean": 16.95,
+    "tool_call_tg_tps_sd": 1.72
+  },
+  "healed-C": {
+    "speed_reps": 20,
+    "completion_pp_tps_mean": 34.86,
+    "completion_pp_tps_sd": 4.21,
+    "completion_tg_tps_mean": 16.78,
+    "completion_tg_tps_sd": 3.03,
+    "tool_call_pp_tps_mean": 33.18,
+    "tool_call_pp_tps_sd": 29.55,
+    "tool_call_tg_tps_mean": 17.31,
+    "tool_call_tg_tps_sd": 2.81
+  }
+}

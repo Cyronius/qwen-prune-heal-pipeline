@@ -2,7 +2,7 @@
 
 *Project log, August 2026. Target hardware: a laptop with an 890M iGPU and 96 GB system RAM. Training ran on rented H200s. Total cloud spend: about $80.*
 
-**Model weights:** Hugging Face — coming soon, link will go here.
+**Model weights:** [huggingface.co/Cyronius/Qwen3.6-27B-A2.8B](https://huggingface.co/Cyronius/Qwen3.6-27B-A2.8B)
 
 **Reproduce it:**
 ```

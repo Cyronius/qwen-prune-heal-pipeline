@@ -1,0 +1,22 @@
+{
+  "runid": "20260823T_speedcheck2_off",
+  "model": "base-q4km-mtp-off",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-base-mtp-Q4_K_M.gguf",
+  "size_gb": 21.71,
+  "timestamp": "2026-08-23T19:06:13.163563+00:00",
+  "tools_acc": null,
+  "tools_by_category": {},
+  "gsm8k_acc": null,
+  "mmlu_acc": null,
+  "loop_rate": null,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 31.73,
+  "completion_pp_tps_sd": 8.34,
+  "completion_tg_tps_mean": 25.95,
+  "completion_tg_tps_sd": 0.55,
+  "tool_call_pp_tps_mean": 26.97,
+  "tool_call_pp_tps_sd": 13.31,
+  "tool_call_tg_tps_mean": 25.88,
+  "tool_call_tg_tps_sd": 0.64,
+  "n": {}
+}

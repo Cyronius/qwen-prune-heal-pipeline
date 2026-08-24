@@ -1,0 +1,16 @@
+{
+  "runid": "20260805T195050Z",
+  "model": "base-q4km",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-base-Q4_K_M.gguf",
+  "size_gb": 21.17,
+  "timestamp": "2026-08-05T19:54:03.655153+00:00",
+  "tools_acc": null,
+  "tools_by_category": {},
+  "gsm8k_acc": 1.0,
+  "mmlu_acc": 0.3333,
+  "loop_rate": 0.0,
+  "n": {
+    "mmlu": 3,
+    "gsm8k": 3
+  }
+}

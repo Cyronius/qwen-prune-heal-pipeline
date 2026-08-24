@@ -1,0 +1,64 @@
+[10:35:36] prune: 30 -> 20 layers, interval 3 -> 2 (drop GDN slot 1 of each 3-group)
+keeping 20/30 layers; dropping [1, 4, 7, 10, 13, 16, 19, 22, 25, 28]
+planned 685 output tensors
+  [0/685] lm_head.weight
+  [1/685] model.language_model.embed_tokens.weight
+  [2/685] model.language_model.layers.0.input_layernorm.weight
+  [3/685] model.language_model.layers.0.linear_attn.A_log
+  [4/685] model.language_model.layers.0.linear_attn.conv1d.weight
+  [5/685] model.language_model.layers.0.linear_attn.dt_bias
+  [6/685] model.language_model.layers.0.linear_attn.in_proj_a.weight
+  [7/685] model.language_model.layers.0.linear_attn.in_proj_b.weight
+  [8/685] model.language_model.layers.0.linear_attn.in_proj_qkv.weight
+  [9/685] model.language_model.layers.0.linear_attn.in_proj_z.weight
+  [10/685] model.language_model.layers.0.linear_attn.norm.weight
+  [11/685] model.language_model.layers.0.linear_attn.out_proj.weight
+  [12/685] model.language_model.layers.0.mlp.experts.down_proj
+  [13/685] model.language_model.layers.0.mlp.experts.gate_up_proj
+  [14/685] model.language_model.layers.0.mlp.gate.weight
+  [15/685] model.language_model.layers.0.mlp.shared_expert.down_proj.weight
+  [16/685] model.language_model.layers.0.mlp.shared_expert.gate_proj.weight
+  [17/685] model.language_model.layers.0.mlp.shared_expert.up_proj.weight
+  [18/685] model.language_model.layers.0.mlp.shared_expert_gate.weight
+  [19/685] model.language_model.layers.0.post_attention_layernorm.weight
+  [20/685] model.language_model.layers.1.input_layernorm.weight
+  [21/685] model.language_model.layers.1.mlp.experts.down_proj
+  [22/685] model.language_model.layers.1.mlp.experts.gate_up_proj
+Traceback (most recent call last):
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 181, in <module>
+    flush()
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 151, in flush
+    save_file(shard_buf, DST / fname, metadata={"format": "pt"})
+  File "C:\Python311\Lib\site-packages\safetensors\torch.py", line 323, in save_file
+    serialize_file(
+safetensors._safetensors_rust.SafetensorError: Error while serializing: I/O error: There is not enough space on the disk. (os error 112)
+[10:35:51] FAILED: prune
+[10:46:29] prune: 30 -> 20 layers, interval 3 -> 2 (drop GDN slot 1 of each 3-group)
+keeping 20/30 layers; dropping [1, 4, 7, 10, 13, 16, 19, 22, 25, 28]
+planned 685 output tensors
+  [0/685] lm_head.weight
+  [1/685] model.language_model.embed_tokens.weight
+  [2/685] model.language_model.layers.0.input_layernorm.weight
+Windows fatal exception: access violation
+
+Current thread 0x0000b6c4 (most recent call first):
+  File "C:\Users\josha\AppData\Roaming\Python\Python311\site-packages\torch\storage.py", line 471 in __getitem__
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 53 in get_tensor
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 66 in <lambda>
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 174 in <module>
+[10:46:37] FAILED: prune
+[10:57:06] prune: 30 -> 20 layers, interval 3 -> 2 (drop GDN slot 1 of each 3-group)
+keeping 20/30 layers; dropping [1, 4, 7, 10, 13, 16, 19, 22, 25, 28]
+planned 685 output tensors
+  [0/685] lm_head.weight
+  [1/685] model.language_model.embed_tokens.weight
+  wrote model-00000.safetensors (2.03 GB, 2 tensors)
+  [2/685] model.language_model.layers.0.input_layernorm.weight
+Windows fatal exception: access violation
+
+Current thread 0x0000c9ac (most recent call first):
+  File "C:\Users\josha\AppData\Roaming\Python\Python311\site-packages\torch\storage.py", line 471 in __getitem__
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 53 in get_tensor
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 66 in <lambda>
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 174 in <module>
+[10:57:14] FAILED: prune

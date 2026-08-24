@@ -1,0 +1,49 @@
+=== k8-nospec ===
+[08:24:24] server healthy
+{
+ "completion_pp_tps_mean": 24.19,
+ "completion_pp_tps_sd": 5.87,
+ "completion_tg_tps_mean": 15.62,
+ "completion_tg_tps_sd": 5.24,
+ "tool_call_pp_tps_mean": 23.48,
+ "tool_call_pp_tps_sd": 16.71,
+ "tool_call_tg_tps_mean": 15.98,
+ "tool_call_tg_tps_sd": 4.58
+}
+=== k8-mtp ===
+[08:31:39] server healthy
+{
+ "completion_pp_tps_mean": 31.61,
+ "completion_pp_tps_sd": 2.5,
+ "completion_tg_tps_mean": 23.56,
+ "completion_tg_tps_sd": 0.98,
+ "tool_call_pp_tps_mean": 31.56,
+ "tool_call_pp_tps_sd": 35.76,
+ "tool_call_tg_tps_mean": 26.34,
+ "tool_call_tg_tps_sd": 0.92
+}
+=== k6-nospec ===
+[08:35:50] server healthy
+{
+ "completion_pp_tps_mean": 33.96,
+ "completion_pp_tps_sd": 5.53,
+ "completion_tg_tps_mean": 19.44,
+ "completion_tg_tps_sd": 5.46,
+ "tool_call_pp_tps_mean": 33.63,
+ "tool_call_pp_tps_sd": 38.33,
+ "tool_call_tg_tps_mean": 19.32,
+ "tool_call_tg_tps_sd": 5.08
+}
+=== k6-mtp ===
+[08:41:32] server healthy
+{
+ "completion_pp_tps_mean": 28.96,
+ "completion_pp_tps_sd": 2.41,
+ "completion_tg_tps_mean": 16.31,
+ "completion_tg_tps_sd": 2.04,
+ "tool_call_pp_tps_mean": 27.07,
+ "tool_call_pp_tps_sd": 25.36,
+ "tool_call_tg_tps_mean": 17.2,
+ "tool_call_tg_tps_sd": 1.84
+}
+PROBE-DONE

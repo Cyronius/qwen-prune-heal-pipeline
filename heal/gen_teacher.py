@@ -79,51 +79,85 @@ def run_forward(model, tok, rows, writer, max_len, log_every):
     """Teacher-force over provided text. Distribution at position i predicts token i+1."""
     t0 = time.time()
     for i, row in enumerate(rows):
-        ids = tok(row["text"], return_tensors="pt", truncation=True, max_length=max_len)
-        ids = {k: v.to(model.device) for k, v in ids.items()}
-        logits = model(**ids).logits[0]  # [T, V]
+        if "input_ids" in row:
+            # a transcript from generate mode: already tokenized, boundary known
+            seq = torch.tensor([row["input_ids"][:max_len]], device=model.device)
+            ids = {"input_ids": seq, "attention_mask": torch.ones_like(seq)}
+            n_prompt = int(row.get("n_prompt_tokens", 0))
+        else:
+            ids = tok(row["text"], return_tensors="pt", truncation=True, max_length=max_len)
+            ids = {k: v.to(model.device) for k, v in ids.items()}
+            n_prompt = 0
+        with torch.no_grad():
+            logits = model(**ids).logits[0]  # [T, V]
         tokens = ids["input_ids"][0].to(torch.int32).cpu().numpy()
         # drop the final position: it predicts a token we do not have
         idx, lp = topk_from_logits(logits[:-1], TOP_K)
         writer.add(f"fwd-{i:07d}", tokens, idx, lp,
                    {"mode": "forward", "slice": row.get("slice", "general"),
-                    "n_prompt_tokens": 0})
+                    "n_prompt_tokens": n_prompt})
         if log_every and i % log_every == 0:
             done = i + 1
             print(f"  forward {done}/{len(rows)}  {done / max(time.time() - t0, 1e-9):.2f} seq/s", flush=True)
 
 
-def run_generate(model, tok, rows, writer, max_new, temperature, log_every):
-    """Sample completions, recording the distribution at each generated step."""
-    t0 = time.time()
-    for i, row in enumerate(rows):
-        chat = row.get("messages")
-        if chat is not None:
-            text = tok.apply_chat_template(
-                chat, tokenize=False, add_generation_prompt=True,
-                tools=row.get("tools"))
-        else:
-            text = row["text"]
-        enc = tok(text, return_tensors="pt").to(model.device)
-        n_prompt = enc["input_ids"].shape[1]
-        out = model.generate(
-            **enc,
-            max_new_tokens=max_new,
-            do_sample=temperature > 0,
-            temperature=temperature or None,
-            return_dict_in_generate=True,
-            output_scores=True,
-        )
-        seq = out.sequences[0]
-        # scores[t] is the distribution that produced sequence position n_prompt + t
-        scores = torch.stack(out.scores, dim=0)[:, 0, :]  # [new, V]
-        idx, lp = topk_from_logits(scores, TOP_K)
-        writer.add(f"gen-{i:07d}", seq.to(torch.int32).cpu().numpy(), idx, lp,
-                   {"mode": "generate", "slice": row.get("slice", "agentic"),
-                    "n_prompt_tokens": int(n_prompt)})
-        if log_every and i % log_every == 0:
-            done = i + 1
-            print(f"  generate {done}/{len(rows)}  {done / max(time.time() - t0, 1e-9):.2f} seq/s", flush=True)
+def render_row(tok, row):
+    chat = row.get("messages")
+    if chat is not None:
+        return tok.apply_chat_template(chat, tokenize=False, add_generation_prompt=True,
+                                       tools=row.get("tools"))
+    return row["text"]
+
+
+def run_generate(model, tok, rows, out_path, max_new, temperature, batch, log_every):
+    """Sample completions in batches. No score capture.
+
+    Scores are deliberately NOT recorded here: retaining full-vocab logits for a
+    batch of 32 costs ~10 GB and halves generation speed. The top-k distributions
+    are captured afterwards by a forward pass over the finished transcripts, which
+    yields identical numbers for a fraction of the cost.
+
+    Output rows carry token ids, not text. Retokenizing rendered text can shift the
+    prompt boundary by a token or two, and everything downstream keys off
+    n_prompt_tokens, so the ids the model actually saw are the ground truth.
+    """
+    tok.padding_side = "left"
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    eos_ids = tok.eos_token_id if isinstance(tok.eos_token_id, list) else [tok.eos_token_id]
+    eos_ids = set(i for i in eos_ids if i is not None)
+
+    results, t0, done_tok = [], time.time(), 0
+    for b0 in range(0, len(rows), batch):
+        chunk = rows[b0:b0 + batch]
+        texts = [render_row(tok, r) for r in chunk]
+        enc = tok(texts, return_tensors="pt", padding=True,
+                  truncation=True, max_length=8192).to(model.device)
+        with torch.no_grad():
+            out = model.generate(**enc, max_new_tokens=max_new,
+                                 do_sample=temperature > 0,
+                                 temperature=temperature or None)
+        lpad = enc["input_ids"].shape[1]
+        for i, row in enumerate(chunk):
+            n_prompt = int(enc["attention_mask"][i].sum())
+            prompt_ids = enc["input_ids"][i][lpad - n_prompt:].tolist()
+            gen_ids = []
+            for t in out[i][lpad:].tolist():
+                gen_ids.append(t)
+                if t in eos_ids:
+                    break
+            done_tok += len(gen_ids)
+            results.append({"slice": row.get("slice", "agentic"),
+                            "category": row.get("category", ""),
+                            "input_ids": prompt_ids + gen_ids,
+                            "n_prompt_tokens": n_prompt})
+        if log_every and (b0 // batch) % log_every == 0:
+            r = done_tok / max(time.time() - t0, 1e-9)
+            print(f"  generate {b0 + len(chunk)}/{len(rows)}  {r:.0f} gen tok/s", flush=True)
+
+    from common import write_jsonl
+    write_jsonl(out_path, results)
+    print(f"wrote {len(results)} transcripts / {done_tok} generated tokens to {out_path}")
 
 
 def main():
@@ -137,6 +171,7 @@ def main():
     ap.add_argument("--temperature", type=float, default=0.7)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--shard-mb", type=int, default=512)
+    ap.add_argument("--batch", type=int, default=32, help="generate-mode batch size")
     ap.add_argument("--log-every", type=int, default=10)
     ap.add_argument("--experts-impl", default="grouped_mm",
                     help="pass an empty string to use the slow default (CPU smoke tests)")
@@ -162,13 +197,16 @@ def main():
     model = student_class(args.text_only).from_pretrained(args.teacher, **kwargs)
     model.eval()
 
-    writer = ShardWriter(args.out, args.shard_mb)
     if args.mode == "forward":
+        writer = ShardWriter(args.out, args.shard_mb)
         run_forward(model, tok, rows, writer, args.max_len, args.log_every)
+        n_seq, n_tok = writer.close()
+        print(f"wrote {n_seq} sequences / {n_tok} tokens to {args.out}")
     else:
-        run_generate(model, tok, rows, writer, args.max_new, args.temperature, args.log_every)
-    n_seq, n_tok = writer.close()
-    print(f"wrote {n_seq} sequences / {n_tok} tokens to {args.out}")
+        out = Path(args.out)
+        out.mkdir(parents=True, exist_ok=True)
+        run_generate(model, tok, rows, out / "transcripts.jsonl",
+                     args.max_new, args.temperature, args.batch, args.log_every)
 
 
 if __name__ == "__main__":

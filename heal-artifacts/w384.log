@@ -1,0 +1,24 @@
+[14:17:01] phase prune: healed-C experts 512->384
+keeping 30/30 layers; dropping [1, 5, 9, 13, 17, 21, 25, 29]
+planned 865 output tensors
+  [0/865] lm_head.weight
+  [1/865] model.language_model.embed_tokens.weight
+  [2/865] model.language_model.layers.0.input_layernorm.weight
+  [3/865] model.language_model.layers.0.linear_attn.A_log
+  [4/865] model.language_model.layers.0.linear_attn.conv1d.weight
+  [5/865] model.language_model.layers.0.linear_attn.dt_bias
+  [6/865] model.language_model.layers.0.linear_attn.in_proj_a.weight
+  [7/865] model.language_model.layers.0.linear_attn.in_proj_b.weight
+  [8/865] model.language_model.layers.0.linear_attn.in_proj_qkv.weight
+  [9/865] model.language_model.layers.0.linear_attn.in_proj_z.weight
+  [10/865] model.language_model.layers.0.linear_attn.norm.weight
+  [11/865] model.language_model.layers.0.linear_attn.out_proj.weight
+  [12/865] model.language_model.layers.0.mlp.experts.down_proj
+Windows fatal exception: access violation
+
+Current thread 0x0000d040 (most recent call first):
+  File "C:\Users\josha\AppData\Roaming\Python\Python311\site-packages\torch\storage.py", line 471 in __getitem__
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 48 in get_tensor
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 80 in make_down
+  File "C:\code\model-shrink-ideas\prune_qwen35.py", line 169 in <module>
+[14:17:09] FAILED: prune

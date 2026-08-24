@@ -1,0 +1,89 @@
+loading C:/code/model-shrink-ideas/heal-artifacts/layer-prefix-3
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/54 [00:00<?, ?it/s]Loading weights:  24%|##4       | 13/54 [00:00<00:02, 15.84it/s]Loading weights:  28%|##7       | 15/54 [00:02<00:08,  4.40it/s]Loading weights:  59%|#####9    | 32/54 [00:03<00:01, 11.13it/s]Loading weights:  76%|#######5  | 41/54 [00:03<00:00, 14.98it/s]Loading weights: 100%|##########| 54/54 [00:03<00:00, 15.74it/s]
+[transformers] [1mQwen3_5MoeForConditionalGeneration LOAD REPORT[0m from: C:/code/model-shrink-ideas/heal-artifacts/layer-prefix-3
+Key                                                | Status  | 
+---------------------------------------------------+---------+-
+model.visual.blocks.{0...26}.attn.proj.weight      | MISSING | 
+model.visual.blocks.{0...26}.norm1.bias            | MISSING | 
+model.visual.blocks.{0...26}.mlp.linear_fc2.bias   | MISSING | 
+model.visual.blocks.{0...26}.attn.qkv.bias         | MISSING | 
+model.visual.blocks.{0...26}.mlp.linear_fc2.weight | MISSING | 
+model.visual.blocks.{0...26}.attn.proj.bias        | MISSING | 
+model.visual.blocks.{0...26}.mlp.linear_fc1.bias   | MISSING | 
+model.visual.blocks.{0...26}.norm1.weight          | MISSING | 
+model.visual.merger.linear_fc1.weight              | MISSING | 
+model.visual.blocks.{0...26}.mlp.linear_fc1.weight | MISSING | 
+model.visual.blocks.{0...26}.norm2.bias            | MISSING | 
+model.visual.blocks.{0...26}.attn.qkv.weight       | MISSING | 
+model.visual.blocks.{0...26}.norm2.weight          | MISSING | 
+model.visual.merger.linear_fc2.bias                | MISSING | 
+model.visual.merger.linear_fc2.weight              | MISSING | 
+model.visual.patch_embed.proj.bias                 | MISSING | 
+model.visual.merger.norm.weight                    | MISSING | 
+model.visual.merger.norm.bias                      | MISSING | 
+model.visual.merger.linear_fc1.bias                | MISSING | 
+model.visual.pos_embed.weight                      | MISSING | 
+model.visual.patch_embed.proj.weight               | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+hooked 3 expert modules
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (410780 > 262144). Running this sequence through the model will result in indexing errors
+running 24000 calibration tokens in chunks of 1024
+  1024/24000 tokens
+  2048/24000 tokens
+  3072/24000 tokens
+  4096/24000 tokens
+  5120/24000 tokens
+  6144/24000 tokens
+  7168/24000 tokens
+  8192/24000 tokens
+  9216/24000 tokens
+  10240/24000 tokens
+  11264/24000 tokens
+  12288/24000 tokens
+  13312/24000 tokens
+  14336/24000 tokens
+  15360/24000 tokens
+  16384/24000 tokens
+  17408/24000 tokens
+  18432/24000 tokens
+  19456/24000 tokens
+  20480/24000 tokens
+  21504/24000 tokens
+  22528/24000 tokens
+  23552/24000 tokens
+  24000/24000 tokens
+
+captured activity for 768 (layer, expert) pairs
+
+764 experts had >= 24 calibration tokens
+
+layer                                     exp  ntok dead  med|r|   >0.9   >0.7 max|r|
+model.language_model.layers.2.mlp.experts   61  6320    1   0.162   0.0%   0.4%  0.778
+model.language_model.layers.2.mlp.experts   94  5389    0   0.152   0.0%   0.0%  0.462
+model.language_model.layers.2.mlp.experts   63  4760    0   0.118   0.0%   0.0%  0.371
+model.language_model.layers.2.mlp.experts  163  4533  120   0.176   0.0%   0.0%  0.484
+model.language_model.layers.2.mlp.experts    8  4289    0   0.213   0.0%   0.0%  0.545
+model.language_model.layers.2.mlp.experts  206  4243    0   0.143   0.0%   0.0%  0.665
+model.language_model.layers.2.mlp.experts    0  4068    0   0.232   0.0%   0.0%  0.588
+model.language_model.layers.2.mlp.experts   78  4056    0   0.117   0.0%   0.0%  0.458
+model.language_model.layers.0.mlp.experts   31  4018  145   0.153   0.0%   0.0%  0.422
+model.language_model.layers.1.mlp.experts   88  3683    0   0.427   0.0%   1.8%  0.805
+model.language_model.layers.1.mlp.experts   40  3642    3   0.254   0.0%   0.4%  0.798
+model.language_model.layers.2.mlp.experts   19  3639    0   0.129   0.0%   0.0%  0.366
+model.language_model.layers.0.mlp.experts  108  3194  299   0.470   0.0%   9.9%  0.898
+model.language_model.layers.2.mlp.experts   39  3178    0   0.209   0.0%   0.0%  0.588
+model.language_model.layers.2.mlp.experts  157  2925    0   0.203   0.0%   1.2%  0.845
+model.language_model.layers.2.mlp.experts  211  2783    0   0.322   0.0%   1.6%  0.807
+model.language_model.layers.2.mlp.experts  129  2658   19   0.443   0.0%   3.0%  0.834
+model.language_model.layers.1.mlp.experts   42  2616   91   0.129   0.0%   0.0%  0.534
+model.language_model.layers.1.mlp.experts  164  2584    0   0.288   0.0%   0.0%  0.625
+model.language_model.layers.2.mlp.experts  108  2556    0   0.195   0.0%   0.0%  0.544
+
+across all 764 qualifying experts:
+  median-best-|r|, averaged: 0.348
+  fraction of channels with a >0.9-correlated partner, averaged: 0.2%
+
+DONE

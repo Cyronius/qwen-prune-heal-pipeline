@@ -1,0 +1,33 @@
+{
+  "runid": "20260820T154540Z",
+  "model": "healed-C",
+  "gguf": "C:/code/model-shrink-ideas/qwen36-healed-C-Q4KM-imat.gguf",
+  "size_gb": 15.95,
+  "timestamp": "2026-08-20T16:11:35.381144+00:00",
+  "tools_acc": 0.975,
+  "tools_by_category": {
+    "argtype": 1.0,
+    "multiturn": 1.0,
+    "negative": 0.9,
+    "selection": 1.0,
+    "simple": 1.0
+  },
+  "gsm8k_acc": 0.8667,
+  "mmlu_acc": 0.7667,
+  "loop_rate": 0.0235,
+  "speed_reps": 10,
+  "completion_pp_tps_mean": 32.71,
+  "completion_pp_tps_sd": 10.14,
+  "completion_tg_tps_mean": 20.51,
+  "completion_tg_tps_sd": 7.75,
+  "tool_call_pp_tps_mean": 38.09,
+  "tool_call_pp_tps_sd": 46.44,
+  "tool_call_tg_tps_mean": 19.96,
+  "tool_call_tg_tps_sd": 8.37,
+  "ppl_wikitext2_32chunk": 8.0105,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

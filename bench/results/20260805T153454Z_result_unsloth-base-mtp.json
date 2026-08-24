@@ -1,0 +1,20 @@
+{
+  "runid": "20260805T153454Z",
+  "model": "unsloth-base-mtp",
+  "gguf": "C:/Users/josha/.cache/huggingface/hub/models--unsloth--Qwen3.6-35B-A3B-MTP-GGUF/snapshots/5bc3e238d916f48a861bac2f8a1990a0e9b7e98d/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+  "size_gb": 22.85,
+  "timestamp": "2026-08-05T15:48:08.545506+00:00",
+  "tools_acc": 1.0,
+  "tools_by_category": {
+    "simple": 1.0
+  },
+  "gsm8k_acc": 1.0,
+  "mmlu_acc": 0.0,
+  "loop_rate": 0.1667,
+  "decode_tps_mean": 8.57,
+  "n": {
+    "tools": 2,
+    "gsm8k": 2,
+    "mmlu": 2
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "get_weather": {
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "Get current weather conditions for a city",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "city": {"type": "string", "description": "City name"},
+          "units": {"type": "string", "enum": ["celsius", "fahrenheit"], "description": "Temperature units"}
+        },
+        "required": ["city"]
+      }
+    }
+  },
+  "get_forecast": {
+    "type": "function",
+    "function": {
+      "name": "get_forecast",
+      "description": "Get multi-day weather forecast for a city",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "city": {"type": "string", "description": "City name"},
+          "days": {"type": "integer", "description": "Number of days ahead (1-10)"}
+        },
+        "required": ["city", "days"]
+      }
+    }
+  },
+  "search_web": {
+    "type": "function",
+    "function": {
+      "name": "search_web",
+      "description": "Search the internet for current information",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {"type": "string", "description": "Search query"},
+          "max_results": {"type": "integer", "description": "Maximum results to return"}
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  "create_calendar_event": {
+    "type": "function",
+    "function": {
+      "name": "create_calendar_event",
+      "description": "Create a calendar event with attendees at a specific date and time",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string"},
+          "date": {"type": "string", "description": "ISO date YYYY-MM-DD"},
+          "time": {"type": "string", "description": "24h time HH:MM"},
+          "duration_minutes": {"type": "integer"}
+        },
+        "required": ["title", "date", "time"]
+      }
+    }
+  },
+  "create_reminder": {
+    "type": "function",
+    "function": {
+      "name": "create_reminder",
+      "description": "Create a simple personal reminder note that fires at a date and time (no attendees, no duration)",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {"type": "string"},
+          "date": {"type": "string", "description": "ISO date YYYY-MM-DD"},
+          "time": {"type": "string", "description": "24h time HH:MM"}
+        },
+        "required": ["text", "date"]
+      }
+    }
+  },
+  "send_email": {
+    "type": "function",
+    "function": {
+      "name": "send_email",
+      "description": "Send an email",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to": {"type": "string", "description": "Recipient email address"},
+          "subject": {"type": "string"},
+          "body": {"type": "string"}
+        },
+        "required": ["to", "subject", "body"]
+      }
+    }
+  },
+  "read_file": {
+    "type": "function",
+    "function": {
+      "name": "read_file",
+      "description": "Read the contents of a file at a path",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {"type": "string"}
+        },
+        "required": ["path"]
+      }
+    }
+  }
+}

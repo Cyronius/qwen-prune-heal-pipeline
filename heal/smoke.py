@@ -307,11 +307,21 @@ def main():
          "--input", work / "prompts-general.jsonl", "--out", work / "data-general",
          "--max-len", "64", "--log-every", "2", "--experts-impl", ""])
 
-    step("4/6 teacher generation over agentic prompts")
+    step("4/6 teacher generation over agentic prompts (batched), then top-k capture")
     run(["gen_teacher.py", "--teacher", work / "tiny", "--mode", "generate",
-         "--input", work / "prompts-agentic.jsonl", "--out", work / "data-agentic",
+         "--input", work / "prompts-agentic.jsonl", "--out", work / "gen-out",
          "--max-new", "8", "--temperature", "0.7", "--log-every", "1",
-         "--experts-impl", ""])
+         "--batch", "2", "--experts-impl", ""])
+    # production flow: distributions come from a forward pass over the finished
+    # transcripts, keyed by the exact token ids generation produced
+    run(["gen_teacher.py", "--teacher", work / "tiny", "--mode", "forward",
+         "--input", work / "gen-out" / "transcripts.jsonl", "--out", work / "data-agentic",
+         "--max-len", "2048", "--log-every", "2", "--experts-impl", ""])
+    tr = [json.loads(l) for l in (work / "gen-out" / "transcripts.jsonl").read_text(encoding="utf-8").splitlines()]
+    for t in tr:
+        if t["n_prompt_tokens"] <= 0 or t["n_prompt_tokens"] >= len(t["input_ids"]):
+            raise SystemExit(f"FAILED: bad prompt boundary {t['n_prompt_tokens']}/{len(t['input_ids'])}")
+    print(f"  OK: {len(tr)} transcripts, prompt boundaries sane")
 
     step("5/6 train, both losses")
     # max-len must exceed the agentic prompts, which carry serialised tool schemas.

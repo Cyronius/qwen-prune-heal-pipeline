@@ -1,0 +1,7 @@
+loading base in bf16 (not 4-bit: merging into quantised weights loses the point)
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/846 [00:00<?, ?it/s]Loading weights:  26%|##6       | 224/846 [00:00<00:00, 2239.35it/s]Loading weights:  53%|#####2    | 448/846 [00:00<00:00, 2099.13it/s]Loading weights:  80%|########  | 681/846 [00:00<00:00, 2194.72it/s]Loading weights: 100%|##########| 846/846 [00:00<00:00, 2192.48it/s]
+Writing model shards:   0%|          | 0/2 [00:00<?, ?it/s]Writing model shards:  50%|#####     | 1/2 [04:06<04:06, 246.36s/it]Writing model shards: 100%|##########| 2/2 [04:30<00:00, 115.37s/it]Writing model shards: 100%|##########| 2/2 [04:30<00:00, 135.02s/it]
+reattached 19 mtp.* tensors as model-mtp.safetensors
+merged checkpoint written to C:\code\model-shrink-ideas\merged-heal-c
+next: convert to GGUF, then quantise with imatrix (not plain Q4_K_M)

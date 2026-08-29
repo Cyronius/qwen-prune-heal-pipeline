@@ -1,0 +1,29 @@
+{
+  "server_bin": "/workspace/llama.cpp/build/bin/llama-server",
+  "ppl_bin": "/workspace/llama.cpp/build/bin/llama-perplexity",
+  "server_bin_note": "pod session 2026-08-28: A100-80GB, llama.cpp b10673 CUDA. Same-tag as the local win-vulkan binary so quality rows are comparable; speed rows are NOT (different hardware) and the speed suite is not run here.",
+  "models": {
+    "qwen38-base": {
+      "gguf": "/workspace/src/UD-Q3_K_XL/Qwen3.8-Flash-Next-UD-Q3_K_XL-00001-of-00003.gguf",
+      "extra_args": ["--override-tensor", "per_layer_token_embd\\.weight=CPU"],
+      "ppl_args": ["--override-tensor", "per_layer_token_embd\\.weight=CPU"],
+      "note": "unsloth UD-Q3_K_XL untouched, 90 GB. PLE table (26.8 GiB) kept on CPU so the 59 GiB transformer fits 80 GB VRAM; the table is a sparse gather, CPU residency is its designed placement."
+    },
+    "qwen38-ple0": {
+      "gguf": "/workspace/builds/qwen38-ple0.gguf",
+      "note": "PLE fully ablated (16 heads -> vocab 1 + shared zero row), transformer untouched, 61.2 GB, fits VRAM entirely."
+    },
+    "qwen38-keep1": {
+      "gguf": "/workspace/builds/qwen38-keep1.gguf",
+      "note": "PLE keep 1/8 heads per n-gram (2 of 16 live), no layer cut, 64.8 GB -- the ceiling-filling no-surgery candidate: does a sliver of the table recover ppl?"
+    },
+    "qwen38-k4cut": {
+      "gguf": "/workspace/builds/qwen38-k4cut.gguf",
+      "note": "PLE halved (keep 4/8 heads per n-gram) + unhealed 48->36 GDN layer cut (interval 4->3), 60.5 GB."
+    },
+    "qwen38-k2cut": {
+      "gguf": "/workspace/builds/qwen38-k2cut.gguf",
+      "note": "PLE quartered (keep 2/8 heads per n-gram) + unhealed 48->36 GDN layer cut, 53.3 GB."
+    }
+  }
+}

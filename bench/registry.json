@@ -1,6 +1,32 @@
 {
-  "server_bin": "C:/Users/josha/.lmstudio/extensions/backends/llama.cpp-win-x86_64-vulkan-avx2-2.27.1/llama-server.exe",
+  "server_bin": "C:/code/model-shrink-ideas/bench/tools/llama-b10673/llama-server.exe",
+  "ppl_bin": "C:/code/model-shrink-ideas/bench/tools/llama-b10673/llama-perplexity.exe",
+  "server_bin_note": "switched 2026-08-28 from LM Studio 2.27.1 to b10673 for qwen4exp (Qwen3.8-Flash-Next) support. 3.6-era entries below predate this binary AND their gguf paths moved to the LM Studio library -- rebench before trusting any cross-binary comparison.",
   "models": {
+    "qwen38-base-q3kxl": {
+      "gguf": "C:/code/model-shrink-ideas/models/qwen38-flash-next/UD-Q3_K_XL/Qwen3.8-Flash-Next-UD-Q3_K_XL-00001-of-00003.gguf",
+      "extra_args": [
+        "-dev",
+        "none"
+      ],
+      "note": "BASELINE for the 3.8 no-heal campaign: unsloth UD-Q3_K_XL (90 GB, 3 shards), untouched. -dev none because the iGPU can't allocate qwen4exp compute buffers (1 GB Vulkan alloc fails); CPU-only, expect slow pp. Same-binary same-box control for all qwen38-* surgical builds.",
+      "ppl_args": [
+        "-dev",
+        "none"
+      ]
+    },
+    "qwen38-ple0": {
+      "gguf": "C:/code/model-shrink-ideas/qwen38-ple0-Q3KXL.gguf",
+      "extra_args": [
+        "-dev",
+        "none"
+      ],
+      "note": "PLE fully ablated (all 16 hash heads -> vocab 1 + shared zero row, surgery_qwen38.py --ple-keep 0), transformer untouched, 61.2 GB. Candidate AND the load-bearing-ness probe for the n-gram table.",
+      "ppl_args": [
+        "-dev",
+        "none"
+      ]
+    },
     "unsloth-base-mtp": {
       "gguf": "C:/Users/josha/.cache/huggingface/hub/models--unsloth--Qwen3.6-35B-A3B-MTP-GGUF/snapshots/5bc3e238d916f48a861bac2f8a1990a0e9b7e98d/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
       "note": "what the user runs today: Qwen3.6 UD-Q4_K_XL with MTP head, unsloth's own quant recipe. NOT a fair speed comparison against our own builds (different conversion/calibration, no shared lineage) -- use base-q4km-mtp for that instead."
@@ -69,22 +95,47 @@
     },
     "27B-A2.8B-k6": {
       "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
-      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:6"],
+      "extra_args": [
+        "--override-kv",
+        "qwen35moe.expert_used_count=int:6"
+      ],
       "note": "same file as 27B-A2.8B-mtp, k=6 routed experts, MTP off. Re-verifying the old k6 speed row (from the llama-current binary + mtp_probe.py, never re-checked against the registry's LM Studio binary)."
     },
     "27B-A2.8B-k6-mtp": {
       "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
-      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:6", "--spec-type", "draft-mtp", "--spec-draft-n-max", "2"],
+      "extra_args": [
+        "--override-kv",
+        "qwen35moe.expert_used_count=int:6",
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "2"
+      ],
       "note": "same file as 27B-A2.8B-mtp, k=6 routed experts, MTP on"
     },
     "27B-A2.8B-k4": {
       "gguf": "C:/code/model-shrink-ideas/qwen36-27b-a2.8b-mtp-Q4KM.gguf",
-      "extra_args": ["--override-kv", "qwen35moe.expert_used_count=int:4"],
+      "extra_args": [
+        "--override-kv",
+        "qwen35moe.expert_used_count=int:4"
+      ],
       "note": "same file as 27B-A2.8B-mtp, k=4 routed experts, MTP off"
     },
     "c2-DEAD": {
       "gguf": "C:/code/model-shrink-ideas/qwen36-c2-20layer-DEAD-Q4_K_M.gguf",
       "note": "DEAD (verified 2026-08-22): Qwen3.6-27B-A2.8B cut a second time, 30->20 layers (interval 3->2), UNHEALED, plain Q4_K_M. tools .05, ppl 3741 -- kept as a negative-result record only, not a candidate."
+    },
+    "qwen38-keep1": {
+      "gguf": "C:/Users/josha/.lmstudio/models/cyronius/qwen38-keep1-Q3KXL/qwen38-keep1-Q3KXL.gguf",
+      "extra_args": [
+        "-dev",
+        "none"
+      ],
+      "ppl_args": [
+        "-dev",
+        "none"
+      ],
+      "note": "SHIP (2026-08-28): PLE keep 1/8 heads per n-gram (2 of 16 live), transformer untouched, 64.8 GB. Pod bench: tools 1.0, gsm8k 1.0, mmlu 0.833 (= base), ppl 4.66 (base 2.40). Rebuilt locally from source shards, PLE-only path identical to pod build."
     }
   },
   "server_bin_mtp": "C:/code/model-shrink-ideas/bench/tools/llama-current/llama-server.exe"

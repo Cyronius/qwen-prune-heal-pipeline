@@ -21,5 +21,12 @@ bench/tools/
 bench/data/wikitext-2-raw-v1.zip
 bench/data/wikitext-2-raw/
 
+# Per-case resumability scratch; the aggregate *_result_*.json + summary.md stay tracked
+bench/results/*_work/
+
+# Downloaded source model shards
+models/
+
 # Working drafts, not the canonical README
 shrink-heal-report*.md
+runqwen38.ps1

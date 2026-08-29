@@ -1,0 +1,24 @@
+{
+  "runid": "pod20260828",
+  "model": "qwen38-keep1",
+  "gguf": "/workspace/builds/qwen38-keep1.gguf",
+  "size_gb": 64.79,
+  "timestamp": "2026-08-28T22:11:49.462636+00:00",
+  "tools_acc": 1.0,
+  "tools_by_category": {
+    "argtype": 1.0,
+    "multiturn": 1.0,
+    "negative": 1.0,
+    "selection": 1.0,
+    "simple": 1.0
+  },
+  "gsm8k_acc": 1.0,
+  "mmlu_acc": 0.8333,
+  "loop_rate": 0.0,
+  "ppl_wikitext2_32chunk": 4.6576,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "runid": "pod20260828",
+  "model": "qwen38-k2cut",
+  "gguf": "/workspace/builds/qwen38-k2cut.gguf",
+  "size_gb": 53.3,
+  "timestamp": "2026-08-28T22:25:07.392548+00:00",
+  "tools_acc": 0.825,
+  "tools_by_category": {
+    "argtype": 0.875,
+    "multiturn": 0.6667,
+    "negative": 0.9,
+    "selection": 0.875,
+    "simple": 0.75
+  },
+  "gsm8k_acc": 0.3333,
+  "mmlu_acc": 0.7333,
+  "loop_rate": 0.0118,
+  "ppl_wikitext2_32chunk": 13.7111,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

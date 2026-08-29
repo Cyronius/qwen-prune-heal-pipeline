@@ -49,8 +49,15 @@ def post_chat(payload):
 
 # ---------------- server lifecycle ----------------
 
+def free_port():
+    if sys.platform == "win32":
+        subprocess.run(["powershell", "-NoProfile", "-Command", f"killport {PORT}"], capture_output=True)
+    else:
+        subprocess.run(f"fuser -k {PORT}/tcp", shell=True, capture_output=True)
+
+
 def start_server(server_bin, gguf, extra_args, _retry=True):
-    subprocess.run(["powershell", "-NoProfile", "-Command", f"killport {PORT}"], capture_output=True)
+    free_port()
     time.sleep(2)
     proc = subprocess.Popen(
         [server_bin, "-m", gguf, "--port", str(PORT), "-ngl", "99", "-c", "8192", *extra_args],
@@ -83,7 +90,7 @@ def stop_server(proc):
             proc.wait(timeout=15)
         except subprocess.TimeoutExpired:
             proc.kill()
-    subprocess.run(["powershell", "-NoProfile", "-Command", f"killport {PORT}"], capture_output=True)
+    free_port()
 
 
 # ---------------- scoring helpers ----------------
@@ -282,12 +289,13 @@ def run_speed_probe(reps=10):
     return speed
 
 
-def run_perplexity(model_cfg):
-    ppl_bin = BENCH / "tools" / "llama" / "llama-perplexity.exe"
+def run_perplexity(model_cfg, registry):
+    ppl_bin = Path(registry.get("ppl_bin", BENCH / "tools" / "llama" / "llama-perplexity.exe"))
     wiki = BENCH / "data" / "wikitext-2-raw" / "wiki.test.raw"
     out = subprocess.run(
-        [str(ppl_bin), "-m", model_cfg["gguf"], "-f", str(wiki), "--chunks", "32", "-c", "512", "-ngl", "99"],
-        capture_output=True, text=True, timeout=7200)
+        [str(ppl_bin), "-m", model_cfg["gguf"], "-f", str(wiki), "--chunks", "32", "-c", "512", "-ngl", "99",
+         *model_cfg.get("ppl_args", [])],
+        capture_output=True, text=True, timeout=14400)
     m = re.search(r"Final estimate: PPL = ([\d.]+)", out.stdout + out.stderr)
     return {"ppl_wikitext2_32chunk": float(m.group(1))} if m else {"error": (out.stderr or out.stdout)[-500:]}
 
@@ -371,7 +379,7 @@ def main():
                         results_by_suite[suite] = run_qa_suite(suite, work, args.limit)
         finally:
             stop_server(proc)
-        ppl = run_perplexity(cfg) if "perplexity" in suites else {}
+        ppl = run_perplexity(cfg, registry) if "perplexity" in suites else {}
         result = aggregate(results_by_suite, speed, ppl, name, cfg, runid)
         out = results_dir / f"{runid}_result_{name}.json"
         out.write_text(json.dumps(result, indent=2), encoding="utf-8")

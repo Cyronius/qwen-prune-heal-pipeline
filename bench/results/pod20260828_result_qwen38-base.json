@@ -1,0 +1,24 @@
+{
+  "runid": "pod20260828",
+  "model": "qwen38-base",
+  "gguf": "/workspace/src/UD-Q3_K_XL/Qwen3.8-Flash-Next-UD-Q3_K_XL-00001-of-00003.gguf",
+  "size_gb": 0.01,
+  "timestamp": "2026-08-28T22:01:42.505737+00:00",
+  "tools_acc": 0.9,
+  "tools_by_category": {
+    "argtype": 1.0,
+    "multiturn": 0.8333,
+    "negative": 0.7,
+    "selection": 1.0,
+    "simple": 1.0
+  },
+  "gsm8k_acc": 1.0,
+  "mmlu_acc": 0.8333,
+  "loop_rate": 0.0,
+  "ppl_wikitext2_32chunk": 2.4043,
+  "n": {
+    "tools": 40,
+    "gsm8k": 15,
+    "mmlu": 30
+  }
+}

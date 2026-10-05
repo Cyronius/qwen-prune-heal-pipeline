@@ -16,6 +16,7 @@ Two campaigns, nearly opposite conclusions, one generation apart: on Qwen3.6, la
 | path | what's there |
 |---|---|
 | `prune_qwen35.py` | Qwen3.5/3.6 layer-cut / expert-width-cut script (safetensors-level) |
+| `merge_layers_qwen35.py` | Qwen3.5/3.6 layer-pair merge (expert union + fitted output map) as an alternative to a second layer cut; see [layer-merge.md](layer-merge.md). `merge_smoke.py` tests it on CPU |
 | `surgery_qwen38.py` | Qwen3.8-Flash-Next GGUF→GGUF surgery: n-gram head dropping, layer cuts |
 | `heal/` | LoRA healing pipeline: teacher generation, training, merging, CPU smoke test |
 | `bench/` | benchmark harness (tools / GSM8K / MMLU / perplexity), pod orchestration, result logs |

@@ -52,8 +52,9 @@ python merge_layers_qwen35.py merged-heal-c merged-c2 \
 ```
 
 * Add `--dry-run` to score and report without writing a checkpoint.
-* More calibration makes the 4096 → 2048 fit safer. The default 64 × 512 tokens is about
-  29k fit tokens. If RAM allows, try `--n-seq 192` (each stream is about 0.8 GB).
+* The full fit has 4096 inputs per output channel, so it can overfit. Each fit tries
+  several ridge strengths (`--ridge 0.001,0.01,0.1,1`) and keeps the best one on
+  held-out data. More calibration (`--n-seq`) still helps the most.
 * `merge_report.json` in the output holds every variant's held-out error for every group.
 
 Then follow the same path as `c2_chain.sh`: convert → Q4_K_M → bench. Heal only if

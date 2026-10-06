@@ -289,10 +289,12 @@ def union_moe(ma: MoE, mb: MoE, score_a, score_b, n_keep, top_k, act, shared_mod
 # output-map fit (ReplaceMe-style, folded into down projections)
 # --------------------------------------------------------------------------------------
 
-def fit_map(routed, shared, target, mode, ridge):
-    """Find maps A_r, A_s ([H, H]) so routed @ A_r + shared @ A_s ~= target.
+def fit_maps(routed, shared, target, mode, ridges):
+    """Yield (ridge, A_r, A_s) per ridge strength: maps ([H, H]) with
+    routed @ A_r + shared @ A_s ~= target.
 
-    Ridge-regularised toward identity, so a weak signal leaves the layer alone.
+    Ridge-regularised toward identity, so a weak signal leaves the layer alone. The
+    expensive products are computed once; each extra strength is one solve.
     """
     H = routed.shape[1]
     if mode == "diag":
@@ -300,19 +302,24 @@ def fit_map(routed, shared, target, mode, ridge):
         r, s, t = routed.double(), shared.double(), target.double()
         rr, ss, rs = (r * r).sum(0), (s * s).sum(0), (r * s).sum(0)
         rt, st = (r * t).sum(0), (s * t).sum(0)
-        lam = ridge * (rr + ss).mean()
-        a11, a22, a12 = rr + lam, ss + lam, rs
-        b1, b2 = rt + lam, st + lam
-        det = a11 * a22 - a12 * a12
-        alpha, beta = (b1 * a22 - b2 * a12) / det, (a11 * b2 - a12 * b1) / det
-        return torch.diag(alpha).float(), torch.diag(beta).float()
+        for ridge in ridges:
+            lam = ridge * (rr + ss).mean()
+            a11, a22, a12 = rr + lam, ss + lam, rs
+            b1, b2 = rt + lam, st + lam
+            det = a11 * a22 - a12 * a12
+            alpha, beta = (b1 * a22 - b2 * a12) / det, (a11 * b2 - a12 * b1) / det
+            yield ridge, torch.diag(alpha).float(), torch.diag(beta).float()
+        return
     X = torch.cat([routed, shared], dim=1).double()
     xtx = X.T @ X
-    lam = ridge * torch.diagonal(xtx).mean()
+    xty = X.T @ target.double()
+    del X
     prior = torch.cat([torch.eye(H), torch.eye(H)]).double()
-    rhs = X.T @ target.double() + lam * prior
-    W = torch.linalg.solve(xtx + lam * torch.eye(2 * H, dtype=torch.float64), rhs)
-    return W[:H].float(), W[H:].float()
+    eye = torch.eye(2 * H, dtype=torch.float64)
+    for ridge in ridges:
+        lam = ridge * torch.diagonal(xtx).mean()
+        W = torch.linalg.solve(xtx + lam * eye, xty + lam * prior)
+        yield ridge, W[:H].float(), W[H:].float()
 
 
 # --------------------------------------------------------------------------------------
@@ -343,12 +350,16 @@ def parse_args(argv=None):
     p.add_argument("--force-variant", default=None, help="use this variant for every group")
     p.add_argument("--top-k", type=int, default=None, help="experts per token (default: keep)")
     p.add_argument("--shared", choices=["concat", "first"], default="concat")
-    p.add_argument("--ridge", type=float, default=1e-2)
+    p.add_argument("--ridge", default="0.001,0.01,0.1,1",
+                   help="ridge strengths to try per fit; the best on held-out data is kept")
     p.add_argument("--batch", type=int, default=4, help="sequences per mixer forward")
     p.add_argument("--dry-run", action="store_true", help="score and report, write nothing")
     return p.parse_args(argv)
 
 
+# Without this the HF mixer modules' Parameters make every forward build an autograd
+# graph, which pins a float copy of every expert touched: OOM within one layer pair.
+@torch.inference_mode()
 def main(argv=None, calib_ids=None):
     args = parse_args(argv)
     from transformers import AutoConfig
@@ -374,6 +385,7 @@ def main(argv=None, calib_ids=None):
     sf = tcfg.shared_expert_intermediate_size
     new_sf = 2 * sf if args.shared == "concat" else sf
     variants = [args.force_variant] if args.force_variant else args.variants.split(",")
+    ridges = [float(x) for x in args.ridge.split(",")]
     for v in variants:
         m, e, f = v.split(":")
         assert m in ("a", "b", "avg") and e in ("a", "b", "avg", "union") and f in ("none", "diag", "full"), v
@@ -434,7 +446,7 @@ def main(argv=None, calib_ids=None):
         tensors[prefix + "down_proj.weight"] = torch.cat([t, t.new_zeros(t.shape[0], extra)], dim=1)
 
     report = {"src": str(args.src), "variants": variants, "top_k": k_new,
-              "shared": args.shared, "ridge": args.ridge,
+              "shared": args.shared, "ridges": ridges,
               "calib_tokens": int(ids.numel()), "groups": []}
     new_idx = 0
     t_start = time.time()
@@ -497,9 +509,15 @@ def main(argv=None, calib_ids=None):
                         MoE.from_layer(sa, k_new, act), MoE.from_layer(sb, k_new, act),
                         score_a, score_b, n_exp, k_new, act, args.shared)
                 r, s = moe(rms(mid, eps))
-                maps = None
+                maps, ridge_used = None, None
                 if fname != "none":
-                    maps = fit_map(r[train_m], s[train_m], (target - mid)[train_m], fname, args.ridge)
+                    rh, shh, th = r[held_m], s[held_m], (target - mid)[held_m]
+                    for ridge, A_r, A_s in fit_maps(r[train_m], s[train_m], (target - mid)[train_m],
+                                                    fname, ridges):
+                        e = (rh @ A_r + shh @ A_s - th).norm().item()
+                        if maps is None or e < best_fit:
+                            best_fit, ridge_used, maps = e, ridge, (A_r, A_s)
+                    del rh, shh, th
                     r, s = r @ maps[0], s @ maps[1]
                 out = mid + r + s
                 err = (out[held_m] - target[held_m]).norm().item() / denom
@@ -507,10 +525,11 @@ def main(argv=None, calib_ids=None):
                              / (t2 - t0).view(-1, H)[train_m].norm()).item()
                 cos = F.cosine_similarity(out[held_m] - x0[held_m],
                                           target[held_m] - x0[held_m], dim=-1).mean().item()
-                rows.append({"variant": v, "heldout_rel_err": round(err, 4),
+                rows.append({"variant": v, "ridge": ridge_used, "heldout_rel_err": round(err, 4),
                              "train_rel_err": round(err_train, 4), "update_cos": round(cos, 4)})
                 print(f"    group {g0 // G}  {v:16s} held-out rel err {err:.4f}  "
-                      f"(train {err_train:.4f})  update cos {cos:.3f}", flush=True)
+                      f"(train {err_train:.4f})  update cos {cos:.3f}"
+                      + (f"  ridge {ridge_used:g}" if ridge_used is not None else ""), flush=True)
                 if best is None or err < best[0]:
                     best = (err, v, out.view_as(merged), moe, maps)
                 del r, s, out

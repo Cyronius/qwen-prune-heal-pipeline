@@ -56,6 +56,11 @@ python merge_layers_qwen35.py merged-heal-c merged-c2 \
   several ridge strengths (`--ridge 0.001,0.01,0.1,1`) and keeps the best one on
   held-out data. More calibration (`--n-seq`) still helps the most.
 * `merge_report.json` in the output holds every variant's held-out error for every group.
+* Cost, measured on one real-size `[GDN, GDN, attn]` group with random weights at the
+  default 64 × 512 tokens, on a 4-core cloud CPU: about 9.5 minutes per group, with a
+  peak of 12.5 GB RAM. The full 30 → 20 run is 10 groups, so expect about 1.5–2 hours
+  on a CPU like that, and less with more cores. Peak RAM doesn't grow with the group
+  count.
 
 Then follow the same path as `c2_chain.sh`: convert → Q4_K_M → bench. Heal only if
 the unhealed numbers beat C2 by a clear margin.
